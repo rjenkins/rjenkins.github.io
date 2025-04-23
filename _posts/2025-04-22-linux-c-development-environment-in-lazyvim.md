@@ -31,7 +31,7 @@ sudo apt install open-vm-tools-desktop
 
 LazyVim has several requirements, so first we'll tackle the terminal. LazyVim requires a terminal that supports true color and undercurl. We'll be using [kitty](https://sw.kovidgoyal.net/kitty/)
 
-![Image]({{ site.baseurl }}/assets/images/lazyvim_reqs.png){:width="35%"}
+[![Image]({{ site.baseurl }}/assets/images/lazyvim_reqs.png){:width="35%"}]({{ site.baseurl }}/assets/images/lazyvim_reqs.png){:width="35%"})
 
 ### Installing and setting up kitty.
 
@@ -77,7 +77,7 @@ Icon=terminal
 
 You should now have a laucher for the kitty terminal.
 
-![Image]({{ site.baseurl }}/assets/images/kitty_launcher.png){:width="50%"}
+[![Image]({{ site.baseurl }}/assets/images/kitty_launcher.png){:width="50%"}]({{ site.baseurl }}/assets/images/kitty_launcher.png){:width="50%"})
 
 ### Optional: tmux, zsh, p10k
 
@@ -130,7 +130,7 @@ alias vi=nvim
 Then `source ~/.zshrc` to read the latest changes. You should now have a terminal that looks like this.
 
 
-![Image]({{ site.baseurl }}/assets/images/kitty_tmux.png){:width="50%"}
+[![Image]({{ site.baseurl }}/assets/images/kitty_tmux.png){:width="50%"}]({{ site.baseurl }}/assets/images/kitty_tmux.png){:width="50%"})
 
 ## Installing LazyVim
 
@@ -152,7 +152,7 @@ vi
 
 LazyVim will start and install and load plugins.
 
-![Image]({{ site.baseurl }}/assets/images/lazy2.png){:width="50%"}
+[![Image]({{ site.baseurl }}/assets/images/lazy2.png){:width="50%"}]({{ site.baseurl }}/assets/images/lazy2.png){:width="50%"})
 
 ## Install C development depedencies
 
