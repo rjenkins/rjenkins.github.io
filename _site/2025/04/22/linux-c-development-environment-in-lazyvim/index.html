@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en-us" class="h-100">
+  <head>
+    <title>
+      Setting up a Linux/C development environment with LazyVim – rjenkins.github.io – https://rjenkins.github.io
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The page supports both dark and light color schemes, and the page author prefers / default is light. -->
+    <!--<meta name="color-scheme" content="dark light" />  -->
+    <meta name="color-scheme" content="light" />
+    <!-- Stylesheet that includes Bootstrap dark mode & custom stylesheet -->
+    <link
+      rel="stylesheet"
+      href="/assets/css/styles.css"
+    />
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <!-- Meta Theme Color is also supported on Safari and Chrome -->
+    <meta
+      name="theme-color"
+      content="#eeeeee"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111111"
+      media="(prefers-color-scheme: light)"
+    />
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Setting up a Linux/C development environment with LazyVim | rjenkins</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Setting up a Linux/C development environment with LazyVim" />
+<meta name="author" content="Ray Jenkins" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting." />
+<meta property="og:description" content="This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting." />
+<link rel="canonical" href="http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/" />
+<meta property="og:url" content="http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/" />
+<meta property="og:site_name" content="rjenkins" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-04-22T00:00:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Setting up a Linux/C development environment with LazyVim" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Ray Jenkins"},"url":"http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/","headline":"Setting up a Linux/C development environment with LazyVim","dateModified":"2025-04-22T00:00:00-07:00","datePublished":"2025-04-22T00:00:00-07:00","description":"This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+ <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="rjenkins" /></head>
+  <body class="d-flex flex-column h-100">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container-fluid">
+    <a class="navbar-brand p-0" href="/">
+    
+      rjenkins.github.io</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="body"><div class="post">
+  <h1>Setting up a Linux/C development environment with LazyVim</h1>
+  <span class="fs-4 text-muted">Apr 22, 2025</span>
+  <div class="mt-4"><p>This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting.</p>
+
+<h2 id="my-setup">My setup</h2>
+
+<p>I’m working on a Mac M3 Max so I’ll be running Linux in <a href="https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion">VMWare Fusion</a>, however these instructions should work on x86_64 and other platforms as well, simply adjust accordingly.</p>
+
+<h2 id="getting-started">Getting started</h2>
+
+<p>For Linux we’re going to use Ubuntu 24.04, but again if you prefer another distribution adjust instructions as necessary. For aarch64 we’ll need to use a daily-live release of noble-desktop. Navigate to <a href="https://cdimage.ubuntu.com/noble/daily-live/20250420/">https://cdimage.ubuntu.com/noble/daily-live/20250420/</a> and download the <code class="language-plaintext highlighter-rouge">noble-desktop-arm64.iso</code>.</p>
+
+<p>Link to ISO image: <a href="https://cdimage.ubuntu.com/noble/daily-live/20250420/noble-desktop-arm64.iso">https://cdimage.ubuntu.com/noble/daily-live/20250420/noble-desktop-arm64.iso</a></p>
+
+<p><img src="/assets/images/noble-desktop-24.02.png" alt="Image" width="50%" /></p>
+
+<p>After installing and booting in VMWare run the following commands to install curl, git, and VMWare tools</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt update
+sudo apt install curl
+sudo apt install git 
+sudo apt install open-vm-tools
+sudo apt install open-vm-tools-desktop
+</code></pre></div></div>
+<h2 id="installing-lazyvim-requirements">Installing LazyVim requirements</h2>
+
+<p>LazyVim has several requirements, so first we’ll tackle the terminal. LazyVim requires a terminal that supports true color and undercurl. We’ll be using <a href="https://sw.kovidgoyal.net/kitty/">kitty</a></p>
+
+<p><img src="/assets/images/lazyvim_reqs.png" alt="Image" width="35%" /></p>
+
+<h3 id="installing-and-setting-up-kitty">Installing and setting up kitty.</h3>
+
+<p>Follow the kitty <a href="https://sw.kovidgoyal.net/kitty/binary/">installation instructions here</a>.</p>
+
+<p>I used the curl/sh install</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+</code></pre></div></div>
+
+<p>Next you’ll need to install a nerd font. We’ll be using <code class="language-plaintext highlighter-rouge">JetBrains Mono</code> <a href="https://www.nerdfonts.com/font-downloads">https://www.nerdfonts.com/font-downloads</a>.</p>
+
+<p>Download the font and follow the instructions below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.) Download a Nerd Font
+2.) Unzip and copy to ~/.fonts
+3.) Run the command fc-cache -fv to manually rebuild the font cache
+</code></pre></div></div>
+<p>Finally, create a file called <code class="language-plaintext highlighter-rouge">~/.config/kitty/kitty.conf</code> and include the following</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>font_family      JetBrainsMono Nerd Font
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+</code></pre></div></div>
+<h3 id="optional-kitty-theme-and-launcher">Optional: kitty theme and launcher</h3>
+
+<p>If you like, select a kitty theme. We’re using <a href="https://github.com/dexpota/kitty-themes?tab=readme-ov-file#arthur">Arthur</a> for this tutorial. Instructions for setting up themes can be found here <a href="https://github.com/dexpota/kitty-themes">https://github.com/dexpota/kitty-themes</a>.</p>
+
+<p>Finally I like to create a launcher for kitty. Place the following in <code class="language-plaintext highlighter-rouge">~/.local/share/applications/kitty.desktop</code> and then drag to your desktop to create a launcher.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Desktop Entry]                                                                                          
+Name=Kitty
+Exec=/home/rjenkins/.local/kitty.app/bin/kitty
+Type=Application
+Terminal=false
+Icon=terminal
+</code></pre></div></div>
+
+<p>You should now have a laucher for the kitty terminal.</p>
+
+<p><img src="/assets/images/kitty_launcher.png" alt="Image" width="50%" /></p>
+
+<h3 id="optional-tmux-zsh-p10k">Optional: tmux, zsh, p10k</h3>
+
+<p>For additional command line ergonomics we’re going to install <a href="https://github.com/tmux/tmux/wiki">tmux</a>, <a href="https://ohmyz.sh/">zsh</a>, and <a href="https://github.com/romkatv/powerlevel10k">p10k</a>.</p>
+
+<blockquote>
+  <p>tmux &amp; zsh</p>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install tmux
+sudo apt install zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+</code></pre></div>  </div>
+</blockquote>
+
+<blockquote>
+  <p>p10k</p>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' &gt;&gt;~/.zshrc
+</code></pre></div>  </div>
+</blockquote>
+
+<p>Then restart zsh and run through p10k configuration.</p>
+
+<h3 id="nvim-and-remaining-requirements">Nvim and remaining requirements</h3>
+
+<p>Install the remaining LazyVim requirements</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install fzf
+sudo apt install ripgrep
+sudo apt install fd
+sudo apt install fd-find
+</code></pre></div></div>
+
+<p>Then download and install nvim</p>
+
+<p><a href="https://github.com/neovim/neovim/blob/master/INSTALL.md">https://github.com/neovim/neovim/blob/master/INSTALL.md</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tar -zxvf nvim-linux-arm64.tar.gz
+mv nvim-linux-arm64 ~/.local
+</code></pre></div></div>
+<p>and update your <code class="language-plaintext highlighter-rouge">~/.zshrc</code> with the path to nvim. I also like setting an alias for nvim to vi.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Append to the bottom of ~/.zshrc
+
+export PATH=$PATH:~/.local/nvim-linux-arm64/bin
+alias vi=nvim
+
+</code></pre></div></div>
+
+<p>Then <code class="language-plaintext highlighter-rouge">source ~/.zshrc</code> to read the latest changes. You should now have a terminal that looks like this.</p>
+
+<p><img src="/assets/images/kitty_tmux.png" alt="Image" width="50%" /></p>
+
+<h2 id="installing-lazyvim">Installing LazyVim</h2>
+
+<p>Follow the installation instructions here <a href="https://www.lazyvim.org/installation">https://www.lazyvim.org/installation</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># required
+mv ~/.config/nvim{,.bak}
+
+# optional but recommended
+mv ~/.local/share/nvim{,.bak}
+mv ~/.local/state/nvim{,.bak}
+mv ~/.cache/nvim{,.bak}
+
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+rm -rf ~/.config/nvim/.git
+vi
+</code></pre></div></div>
+
+<p>LazyVim will start and install and load plugins.</p>
+
+<p><img src="/assets/images/lazy2.png" alt="Image" width="50%" /></p>
+
+<h2 id="install-c-development-depedencies">Install C development depedencies</h2>
+
+<p>Quit vim and install the following dependencies.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install build-essential
+sudo apt install clang
+sudo apt install python3-dev                                                                              
+sudo apt install python3-venv 
+sudo apt install llvm
+sudo apt install clang-format
+sudo apt install libcap-dev
+sudo apt install libacl1-dev
+sudo apt install clangd
+sudo apt install bear
+</code></pre></div></div>
+<p>Next launch vim again and run the command <code class="language-plaintext highlighter-rouge">:Mason</code>, search for <code class="language-plaintext highlighter-rouge">clang-format</code> and hit <code class="language-plaintext highlighter-rouge">i</code> to install.</p>
+
+<p><a href="/assets/images/clang-format.png" width="50%"><img src="/assets/images/clang-format.png" alt="Image" width="50%" /></a>)</p>
+
+<h2 id="setting-up-clangd">Setting up clangd</h2>
+
+<p>You can install clangd directly from Mason, however there is currently a bug when attempting to do so on Ubuntu aarch64. <a href="https://github.com/williamboman/mason.nvim/issues/1578">https://github.com/williamboman/mason.nvim/issues/1578</a>.</p>
+
+<p>Fortunately we can work around this as we’ve already manually installed clangd above with <code class="language-plaintext highlighter-rouge">apt install</code>. Place the following in <code class="language-plaintext highlighter-rouge">~/.config/nvim/lua/plugins/configs/lspconfig.lua</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>return {                                                                                                  
+    "neovim/nvim-lspconfig",
+    opts = {
+        servers = {
+            clangd = {
+                mason = false,
+            },
+        },
+    },
+}
+</code></pre></div></div>
+
+<h1 id="sample-project---curl">Sample Project - curl</h1>
+
+<p>Let’s use <a href="https://github.com/curl/curl">curl</a> as a sample project. Clone the curl repo and then open <code class="language-plaintext highlighter-rouge">/src/tool_main.c</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/curl/curl.git
+cd curl 
+vi src/tool_main.c
+</code></pre></div></div>
+<p>Scroll down a bit and you should see lots of errors and warnings from clangd. Also if you attempt to use any lsp code navigation bindings like <code class="language-plaintext highlighter-rouge">gd</code> they will not work. Let’s fix that.</p>
+
+<p><a href="/assets/images/clang_errors.png" width="50%"><img src="/assets/images/clang_errors.png" alt="Image" width="50%" /></a>)</p>
+
+<h1 id="build-curl-and-compile_commandsjson-with-bear">Build curl and compile_commands.json with bear</h1>
+
+<p><a href="https://github.com/rizsotto/Bear">Bear</a> is a tool that generates a compilation database for clang. We can build curl with bear to generate a <code class="language-plaintext highlighter-rouge">compile_commands.json</code> file to make clangd much more useful. First though we need to build curl, run the following commands to install curl’s dependencies and then build with bear.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install autoconf
+sudo apt install libtool
+sudo apt install libpsl-dev
+sudo apt install libssl-dev
+autoreconf -fi
+./configure --with-openssl
+bear -- make
+</code></pre></div></div>
+<p>Once you’re down compiling you should have a compile_commands.json file in the curl directory. Now open LazyVim again and enjoy all the lsp features.</p>
+
+<video width="600" height="400" controls="" loop="" muted="" autoplay="">
+    <source src="/assets/images/lazy_clang_final.mp4" />
+</video>
+
+</div>
+</div>
+</div>
+    </div>
+    <footer class="footer mt-auto py-3">
+  <div class="container footer-container">
+<a class="footer-icon-links" href="mailto:ray.jenkins@gmail.com">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    class="bi bi-envelope-fill footer-icons"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"
+    />
+  </svg>
+</a>
+  
+<a
+  class="footer-icon-links"
+  href="https://www.twitter.com/_rayjenkins"
+  ><svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    class="bi bi-twitter footer-icons"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
+    /></svg
+></a>
+  
+<a
+  class="footer-icon-links"
+  href="https://github.com/rjenkins"
+  ><svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    class="bi bi-github footer-icons"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+    /></svg
+></a>
+  
+
+    <a class="footer-icon-links" href="https://bsky.app/profile/ramond.bsky.social" target="_blank" rel="me" aria-label="Bluesky Profile">
+      <svg class="bi bi-linkedin footer-icons" width="16" height="16" viewBox="0 0 600 530" aria-hidden="true" fill="currentColor">
+        <path d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/>
+      </svg>
+    </a>
+
+</div>
+</footer>
+
+    <!-- JS for Bootstrap -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/assets/js/copy.js"></script>
+  </body>
+</html>

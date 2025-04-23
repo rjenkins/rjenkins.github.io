@@ -1,1 +1,208 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-04-21T14:20:08-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">rjenkins</title><subtitle>https://rjenkins.github.io</subtitle><author><name>Ray Jenkins</name></author></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-04-23T12:54:28-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">rjenkins</title><subtitle>https://rjenkins.github.io</subtitle><author><name>Ray Jenkins</name></author><entry><title type="html">Setting up a Linux/C development environment with LazyVim</title><link href="http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/" rel="alternate" type="text/html" title="Setting up a Linux/C development environment with LazyVim" /><published>2025-04-22T00:00:00-07:00</published><updated>2025-04-22T00:00:00-07:00</updated><id>http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim</id><content type="html" xml:base="http://localhost:4000/2025/04/22/linux-c-development-environment-in-lazyvim/">&lt;p&gt;This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting.&lt;/p&gt;
+
+&lt;h2 id=&quot;my-setup&quot;&gt;My setup&lt;/h2&gt;
+
+&lt;p&gt;I’m working on a Mac M3 Max so I’ll be running Linux in &lt;a href=&quot;https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion&quot;&gt;VMWare Fusion&lt;/a&gt;, however these instructions should work on x86_64 and other platforms as well, simply adjust accordingly.&lt;/p&gt;
+
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting started&lt;/h2&gt;
+
+&lt;p&gt;For Linux we’re going to use Ubuntu 24.04, but again if you prefer another distribution adjust instructions as necessary. For aarch64 we’ll need to use a daily-live release of noble-desktop. Navigate to &lt;a href=&quot;https://cdimage.ubuntu.com/noble/daily-live/20250420/&quot;&gt;https://cdimage.ubuntu.com/noble/daily-live/20250420/&lt;/a&gt; and download the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;noble-desktop-arm64.iso&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Link to ISO image: &lt;a href=&quot;https://cdimage.ubuntu.com/noble/daily-live/20250420/noble-desktop-arm64.iso&quot;&gt;https://cdimage.ubuntu.com/noble/daily-live/20250420/noble-desktop-arm64.iso&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/noble-desktop-24.02.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After installing and booting in VMWare run the following commands to install curl, git, and VMWare tools&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt update
+sudo apt install curl
+sudo apt install git 
+sudo apt install open-vm-tools
+sudo apt install open-vm-tools-desktop
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;installing-lazyvim-requirements&quot;&gt;Installing LazyVim requirements&lt;/h2&gt;
+
+&lt;p&gt;LazyVim has several requirements, so first we’ll tackle the terminal. LazyVim requires a terminal that supports true color and undercurl. We’ll be using &lt;a href=&quot;https://sw.kovidgoyal.net/kitty/&quot;&gt;kitty&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/lazyvim_reqs.png&quot; alt=&quot;Image&quot; width=&quot;35%&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;installing-and-setting-up-kitty&quot;&gt;Installing and setting up kitty.&lt;/h3&gt;
+
+&lt;p&gt;Follow the kitty &lt;a href=&quot;https://sw.kovidgoyal.net/kitty/binary/&quot;&gt;installation instructions here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I used the curl/sh install&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Next you’ll need to install a nerd font. We’ll be using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;JetBrains Mono&lt;/code&gt; &lt;a href=&quot;https://www.nerdfonts.com/font-downloads&quot;&gt;https://www.nerdfonts.com/font-downloads&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Download the font and follow the instructions below.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1.) Download a Nerd Font
+2.) Unzip and copy to ~/.fonts
+3.) Run the command fc-cache -fv to manually rebuild the font cache
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Finally, create a file called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.config/kitty/kitty.conf&lt;/code&gt; and include the following&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;font_family      JetBrainsMono Nerd Font
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;optional-kitty-theme-and-launcher&quot;&gt;Optional: kitty theme and launcher&lt;/h3&gt;
+
+&lt;p&gt;If you like, select a kitty theme. We’re using &lt;a href=&quot;https://github.com/dexpota/kitty-themes?tab=readme-ov-file#arthur&quot;&gt;Arthur&lt;/a&gt; for this tutorial. Instructions for setting up themes can be found here &lt;a href=&quot;https://github.com/dexpota/kitty-themes&quot;&gt;https://github.com/dexpota/kitty-themes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Finally I like to create a launcher for kitty. Place the following in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.local/share/applications/kitty.desktop&lt;/code&gt; and then drag to your desktop to create a launcher.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Desktop Entry]                                                                                          
+Name=Kitty
+Exec=/home/rjenkins/.local/kitty.app/bin/kitty
+Type=Application
+Terminal=false
+Icon=terminal
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You should now have a laucher for the kitty terminal.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/kitty_launcher.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;optional-tmux-zsh-p10k&quot;&gt;Optional: tmux, zsh, p10k&lt;/h3&gt;
+
+&lt;p&gt;For additional command line ergonomics we’re going to install &lt;a href=&quot;https://github.com/tmux/tmux/wiki&quot;&gt;tmux&lt;/a&gt;, &lt;a href=&quot;https://ohmyz.sh/&quot;&gt;zsh&lt;/a&gt;, and &lt;a href=&quot;https://github.com/romkatv/powerlevel10k&quot;&gt;p10k&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;tmux &amp;amp; zsh&lt;/p&gt;
+  &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install tmux
+sudo apt install zsh
+sh -c &quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;  &lt;/div&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;p10k&lt;/p&gt;
+  &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' &amp;gt;&amp;gt;~/.zshrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;  &lt;/div&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Then restart zsh and run through p10k configuration.&lt;/p&gt;
+
+&lt;h3 id=&quot;nvim-and-remaining-requirements&quot;&gt;Nvim and remaining requirements&lt;/h3&gt;
+
+&lt;p&gt;Install the remaining LazyVim requirements&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install fzf
+sudo apt install ripgrep
+sudo apt install fd
+sudo apt install fd-find
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then download and install nvim&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/neovim/neovim/blob/master/INSTALL.md&quot;&gt;https://github.com/neovim/neovim/blob/master/INSTALL.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;tar -zxvf nvim-linux-arm64.tar.gz
+mv nvim-linux-arm64 ~/.local
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;and update your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt; with the path to nvim. I also like setting an alias for nvim to vi.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Append to the bottom of ~/.zshrc
+
+export PATH=$PATH:~/.local/nvim-linux-arm64/bin
+alias vi=nvim
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;source ~/.zshrc&lt;/code&gt; to read the latest changes. You should now have a terminal that looks like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/kitty_tmux.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;installing-lazyvim&quot;&gt;Installing LazyVim&lt;/h2&gt;
+
+&lt;p&gt;Follow the installation instructions here &lt;a href=&quot;https://www.lazyvim.org/installation&quot;&gt;https://www.lazyvim.org/installation&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# required
+mv ~/.config/nvim{,.bak}
+
+# optional but recommended
+mv ~/.local/share/nvim{,.bak}
+mv ~/.local/state/nvim{,.bak}
+mv ~/.cache/nvim{,.bak}
+
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+rm -rf ~/.config/nvim/.git
+vi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LazyVim will start and install and load plugins.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/lazy2.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;install-c-development-depedencies&quot;&gt;Install C development depedencies&lt;/h2&gt;
+
+&lt;p&gt;Quit vim and install the following dependencies.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install build-essential
+sudo apt install clang
+sudo apt install python3-dev                                                                              
+sudo apt install python3-venv 
+sudo apt install llvm
+sudo apt install clang-format
+sudo apt install libcap-dev
+sudo apt install libacl1-dev
+sudo apt install clangd
+sudo apt install bear
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Next launch vim again and run the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:Mason&lt;/code&gt;, search for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;clang-format&lt;/code&gt; and hit &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;i&lt;/code&gt; to install.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/images/clang-format.png&quot; width=&quot;50%&quot;&gt;&lt;img src=&quot;/assets/images/clang-format.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-clangd&quot;&gt;Setting up clangd&lt;/h2&gt;
+
+&lt;p&gt;You can install clangd directly from Mason, however there is currently a bug when attempting to do so on Ubuntu aarch64. &lt;a href=&quot;https://github.com/williamboman/mason.nvim/issues/1578&quot;&gt;https://github.com/williamboman/mason.nvim/issues/1578&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Fortunately we can work around this as we’ve already manually installed clangd above with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apt install&lt;/code&gt;. Place the following in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.config/nvim/lua/plugins/configs/lspconfig.lua&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return {                                                                                                  
+    &quot;neovim/nvim-lspconfig&quot;,
+    opts = {
+        servers = {
+            clangd = {
+                mason = false,
+            },
+        },
+    },
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;sample-project---curl&quot;&gt;Sample Project - curl&lt;/h1&gt;
+
+&lt;p&gt;Let’s use &lt;a href=&quot;https://github.com/curl/curl&quot;&gt;curl&lt;/a&gt; as a sample project. Clone the curl repo and then open &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/src/tool_main.c&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/curl/curl.git
+cd curl 
+vi src/tool_main.c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Scroll down a bit and you should see lots of errors and warnings from clangd. Also if you attempt to use any lsp code navigation bindings like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gd&lt;/code&gt; they will not work. Let’s fix that.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/images/clang_errors.png&quot; width=&quot;50%&quot;&gt;&lt;img src=&quot;/assets/images/clang_errors.png&quot; alt=&quot;Image&quot; width=&quot;50%&quot; /&gt;&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h1 id=&quot;build-curl-and-compile_commandsjson-with-bear&quot;&gt;Build curl and compile_commands.json with bear&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/rizsotto/Bear&quot;&gt;Bear&lt;/a&gt; is a tool that generates a compilation database for clang. We can build curl with bear to generate a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;compile_commands.json&lt;/code&gt; file to make clangd much more useful. First though we need to build curl, run the following commands to install curl’s dependencies and then build with bear.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install autoconf
+sudo apt install libtool
+sudo apt install libpsl-dev
+sudo apt install libssl-dev
+autoreconf -fi
+./configure --with-openssl
+bear -- make
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Once you’re down compiling you should have a compile_commands.json file in the curl directory. Now open LazyVim again and enjoy all the lsp features.&lt;/p&gt;
+
+&lt;video width=&quot;600&quot; height=&quot;400&quot; controls=&quot;&quot; loop=&quot;&quot; muted=&quot;&quot; autoplay=&quot;&quot;&gt;
+    &lt;source src=&quot;/assets/images/lazy_clang_final.mp4&quot; /&gt;
+&lt;/video&gt;</content><author><name>Ray Jenkins</name></author><summary type="html">This is a tutorial on how to quickly setup a powerful C development environment on Linux with LazyVim. We’ll start with a fresh Linux install and by the end you should have a modern development environment with intelligent features like code completion, error and warning diagnostics, go-to-defintion, find references, hover information, hints, and formatting.</summary></entry></feed>
