@@ -219,7 +219,7 @@ autoreconf -fi
 ./configure --with-openssl
 bear -- make
 ```
-Once you're down compiling you should have a compile_commands.json file in the curl directory. Now open LazyVim again and enjoy all the lsp features.
+Once you're done compiling you should have a compile_commands.json file in the curl directory. Now open LazyVim again and enjoy the lsp features.
 
 <video width=600 height=400 controls loop="" muted="" autoplay="">
     <source src="{{ site.baseurl }}/assets/images/lazy_clang_final.mp4">
